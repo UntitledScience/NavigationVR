@@ -14,7 +14,6 @@ public class teleportRaycast : MonoBehaviour {
     private GameObject tpRecGreen;
     private GameObject tpRecRed;
 
-
 	// Use this for initialization
 	void Start () {
 	
@@ -29,23 +28,28 @@ public class teleportRaycast : MonoBehaviour {
             tpRecRed = (GameObject)Instantiate(teleportReticleRed, resetPosition, Quaternion.identity);
             MakeInvisible(tpRecRed);
         }
-	}
+
+   	}
 	
-	// Update is called once per frame
-	void Update () {
+	// polling camera's transform before culling to render
+	void OnPreCull () {
 
         // position teleportReticle where you desire to be teleported
         if (Input.GetButton("Fire2"))
         {
             PositionReticle();
         }
+	
+	}
 
+    void Update()
+    {
+        
         if (Input.GetButtonUp("Fire2"))
         {
             TeleportToPoint();
         }
-	
-	}
+    }
 
     void PositionReticle()
     {
@@ -78,9 +82,9 @@ public class teleportRaycast : MonoBehaviour {
     {
         if (canTeleport)
         {
-            transform.position = tpRecGreen.transform.position;
+            transform.parent.position = tpRecGreen.transform.position;
             MakeInvisible(tpRecGreen);
-            print("teleporting~!");
+            print("teleporting to " + tpRecGreen.transform.position);
 
         } else
         {

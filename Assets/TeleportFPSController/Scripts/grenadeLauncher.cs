@@ -6,7 +6,6 @@ public class grenadeLauncher : MonoBehaviour {
     public GameObject grenade;
     public GameObject throwArm;
     public GameObject throwArmMax;
-    public Camera thisCamera;
 
     public float maxForce = 1f;
     public float rateForce = 1.3f;
@@ -29,20 +28,20 @@ public class grenadeLauncher : MonoBehaviour {
         if (Input.GetButtonDown("Fire1"))
         {
             preppingThrow = true;
-            GameObject newGrenade = (GameObject)Instantiate(grenade, throwArm.transform.position, Quaternion.identity);
+            GameObject newGrenade = (GameObject)Instantiate(grenade, throwArm.transform.position, transform.rotation);
             tempGrenade = newGrenade;
             tempGrenade.GetComponent<Rigidbody>().isKinematic = true;
-            tempGrenade.transform.parent = thisCamera.transform;
+            tempGrenade.transform.parent = Camera.main.transform;
             StartCoroutine(PrepGrenade());
         }
 
         if (Input.GetButtonUp("Fire1"))
         {
             preppingThrow = false;
-          SpawnGrenade();
+            SpawnGrenade();
         }
+    }
 
-	}
 
     IEnumerator PrepGrenade()
     {
@@ -77,7 +76,7 @@ public class grenadeLauncher : MonoBehaviour {
         // GameObject newGrenade = (GameObject)Instantiate(grenade, throwArm.transform.position, Quaternion.identity);
         tempGrenade.transform.parent = null;
         tempGrenade.GetComponent<Rigidbody>().isKinematic = false;  
-        throwForce = (thisCamera.transform.forward) * curForce;
+        throwForce = (tempGrenade.transform.forward) * curForce;
         tempGrenade.GetComponent<Rigidbody>().AddForce(throwForce);
         curForce = originalForce; // reset curForce
     }
