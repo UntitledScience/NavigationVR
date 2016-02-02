@@ -23,25 +23,32 @@ public class grenadeLauncher : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void OnPreCull () {
 	
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButton("Fire1"))
         {
-            preppingThrow = true;
-            GameObject newGrenade = (GameObject)Instantiate(grenade, throwArm.transform.position, transform.rotation);
-            tempGrenade = newGrenade;
-            tempGrenade.GetComponent<Rigidbody>().isKinematic = true;
-            tempGrenade.transform.parent = Camera.main.transform;
-            StartCoroutine(PrepGrenade());
+            if (!preppingThrow)
+            {
+                preppingThrow = true;
+                GameObject newGrenade = (GameObject)Instantiate(grenade, throwArm.transform.position, transform.rotation);
+                tempGrenade = newGrenade;
+                tempGrenade.GetComponent<Rigidbody>().isKinematic = true;
+                tempGrenade.transform.parent = Camera.main.transform;
+                StartCoroutine(PrepGrenade());
+            }
+
         }
 
+    }
+
+    void Update()
+    {
         if (Input.GetButtonUp("Fire1"))
         {
             preppingThrow = false;
             SpawnGrenade();
         }
     }
-
 
     IEnumerator PrepGrenade()
     {
@@ -76,7 +83,7 @@ public class grenadeLauncher : MonoBehaviour {
         // GameObject newGrenade = (GameObject)Instantiate(grenade, throwArm.transform.position, Quaternion.identity);
         tempGrenade.transform.parent = null;
         tempGrenade.GetComponent<Rigidbody>().isKinematic = false;  
-        throwForce = (tempGrenade.transform.forward) * curForce;
+        throwForce = tempGrenade.transform.forward.normalized * curForce;
         tempGrenade.GetComponent<Rigidbody>().AddForce(throwForce);
         curForce = originalForce; // reset curForce
     }

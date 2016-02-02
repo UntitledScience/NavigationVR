@@ -84,7 +84,6 @@ public class teleportRaycast : MonoBehaviour {
         {
             transform.parent.position = tpRecGreen.transform.position;
             MakeInvisible(tpRecGreen);
-            print("teleporting to " + tpRecGreen.transform.position);
 
         } else
         {
