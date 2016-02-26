@@ -13,6 +13,8 @@ public class teleportRaycast : MonoBehaviour {
     private bool canTeleport = false;
     private GameObject tpRecGreen;
     private GameObject tpRecRed;
+    private int leftSteamControllerIndex;
+    private int rightSteamControllerIndex;
 
 	// Use this for initialization
 	void Start () {
@@ -29,13 +31,18 @@ public class teleportRaycast : MonoBehaviour {
             MakeInvisible(tpRecRed);
         }
 
-   	}
+        // initialize Steam Controllers
+        rightSteamControllerIndex = SteamVR_Controller.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Rightmost);
+
+    }
 	
 	// polling camera's transform before culling to render
 	void OnPreCull () {
 
-        // position teleportReticle where you desire to be teleported
-        if (Input.GetButton("Fire2"))
+        if (SteamVR_Controller.Input(rightSteamControllerIndex).GetPress(SteamVR_Controller.ButtonMask.Trigger))
+
+            // position teleportReticle where you desire to be teleported
+            //if (Input.GetButton("Fire2"))
         {
             PositionReticle();
         }
@@ -44,8 +51,9 @@ public class teleportRaycast : MonoBehaviour {
 
     void Update()
     {
-        
-        if (Input.GetButtonUp("Fire2"))
+
+        if (SteamVR_Controller.Input(rightSteamControllerIndex).GetPressUp(SteamVR_Controller.ButtonMask.Trigger))
+        //if (Input.GetButtonUp("Fire2"))
         {
             TeleportToPoint();
         }
@@ -57,9 +65,9 @@ public class teleportRaycast : MonoBehaviour {
         RaycastHit hit;
 
         // if raycast hit, position reticle at raycast
-		if (Physics.Raycast(rightArm.transform.position, Camera.main.transform.forward, out hit, teleportMaxDist))
+		if (Physics.Raycast(rightArm.transform.position, rightArm.transform.forward, out hit, teleportMaxDist))
         {
-			Debug.DrawLine(Camera.main.transform.position, hit.point, Color.red);
+			Debug.DrawLine(rightArm.transform.position, hit.point, Color.red);
             Vector3 dir = hit.normal;
             MakeVisible(tpRecGreen);
             tpRecGreen.transform.position = hit.point + (dir * charRadius);
@@ -71,7 +79,7 @@ public class teleportRaycast : MonoBehaviour {
             // Vector3 dir = (Camera.main.transform.position - fwd).normalized;
             // print(dir);
             MakeVisible(tpRecRed);
-			tpRecRed.transform.position = rightArm.transform.position + (Camera.main.transform.forward.normalized * teleportMaxDist);
+			tpRecRed.transform.position = rightArm.transform.position + (rightArm.transform.forward.normalized * teleportMaxDist);
             MakeInvisible(tpRecGreen);
             canTeleport = false;
         }
@@ -82,7 +90,7 @@ public class teleportRaycast : MonoBehaviour {
     {
         if (canTeleport)
         {
-            transform.parent.position = tpRecGreen.transform.position;
+            transform.parent.parent.position = tpRecGreen.transform.position;
             MakeInvisible(tpRecGreen);
 
         } else
